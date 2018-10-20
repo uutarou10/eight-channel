@@ -1,0 +1,16 @@
+{
+  "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
+  "linterOptions": {
+    "exclude": [
+      "config/**/*.js",
+      "node_modules/**/*.ts"
+    ]
+  },
+  "rules": {
+    "variable-name": [true, "allow-leading-underscore", "allow-pascal-case"],
+    "interface-name": [true, "never-prefix"],
+    "object-literal-sort-keys" : false,
+    "semicolon": true,
+    "class-name": false
+  }
+}
