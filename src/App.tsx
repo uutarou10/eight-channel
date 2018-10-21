@@ -1,12 +1,13 @@
 import { ConnectedRouter } from 'connected-react-router';
 import * as React from 'react';
+import { connect } from 'react-redux';
 import { Route, Switch } from 'react-router';
-import { Container } from 'semantic-ui-react';
+import { Container, Dimmer, Loader } from 'semantic-ui-react';
 import Header from './component/Header';
 import Thread from './component/Thread';
 import Top from './component/Top';
 import { authStateChanged } from './module/auth';
-import store, { history } from './store';
+import store, { history, RootState } from './store';
 import { auth } from './util/firebase';
 
 // 認証状態が変わった際に呼び出されるハンドラー
@@ -14,8 +15,16 @@ auth.onAuthStateChanged(user => {
   store.dispatch(authStateChanged(user));
 });
 
-class App extends React.Component {
+class App extends React.Component<{appLoaded: boolean}> {
   public render() {
+    if (!this.props.appLoaded) {
+      return (
+        <Dimmer active={true}>
+          <Loader>Loading</Loader>
+        </Dimmer>
+      );
+    }
+
     return (
       <ConnectedRouter history={history}>
         <Container>
@@ -32,4 +41,8 @@ class App extends React.Component {
   }
 }
 
-export default App;
+const mapStateToProps = (state: RootState) => ({
+  appLoaded: state.auth.authHandlerCalled
+});
+
+export default connect(mapStateToProps)(App);

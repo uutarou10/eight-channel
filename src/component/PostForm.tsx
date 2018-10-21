@@ -1,14 +1,16 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Button, Form } from 'semantic-ui-react';
+import { Button, Form, Header, Icon, Segment } from 'semantic-ui-react';
 import { createPost, updateBody, updateName } from 'src/module/post';
 import { RootState } from 'src/store';
+import { signInWithGoogle } from 'src/util/firebase';
 
 interface PropTypes {
   threadId: string;
   isCreating: boolean;
   name: string;
   body: string;
+  user: firebase.User | null;
 
   create: (
     threadId: string,
@@ -26,10 +28,28 @@ const PostForm: React.SFC<PropTypes> = (props) => {
       props.threadId,
       props.name,
       props.body,
-      'uid'
+      (props.user as firebase.User).uid
     );
   };
 
+  if (!props.user) {
+    return (
+      <Segment placeholder="true" textAlign="center">
+        <Header icon={true}>
+          <Icon name='key' />
+          投稿するにはログインが必要です。
+        </Header>
+        <Button
+          primary={true}
+          style={{
+            display: 'block',
+            margin: 'auto'
+          }}
+          onClick={signInWithGoogle}
+        >Login with Google</Button>
+      </Segment>
+    );
+  }
 
   return (
     <Form>
@@ -64,7 +84,8 @@ const PostForm: React.SFC<PropTypes> = (props) => {
 const mapStateToProps = (state: RootState) => ({
   isCreating: state.post.isCreating,
   name: state.post.name,
-  body: state.post.body
+  body: state.post.body,
+  user: state.auth.user
 });
 
 const mapDispatchToPorps = (dispatch: any) => ({

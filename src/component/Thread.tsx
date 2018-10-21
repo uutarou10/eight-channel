@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
+import { Divider } from 'semantic-ui-react';
 import Post from 'src/model/post';
 import { fetchPostList } from 'src/module/post';
 import { fetchThread } from 'src/module/thread';
@@ -55,7 +56,7 @@ class Thread extends React.Component<PropTypes> {
 
     if (isFetchingPost || !currentThread) {
       return (
-        <p>Now loading...</p>
+        <React.Fragment />
       );
     }
 
@@ -63,7 +64,7 @@ class Thread extends React.Component<PropTypes> {
       <StyledWrapper>
         <h2>{currentThread.title}</h2>
         <PostList posts={posts} />
-        <hr />
+        <Divider />
         <PostForm threadId={match.params.threadId} />
       </StyledWrapper>
     );

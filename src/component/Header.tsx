@@ -9,22 +9,38 @@ interface PropTypes {
 }
 
 const StyledHeader = styled.header`
+  padding: 8px;
+
   h1 {
-    font-weight: 900;
-    text-align: center;
-    font-size: 35px;
+    margin: 0;
   }
 
-  h1 > a {
-    color: #3963a8;
+  p {
+    text-align: center;
+    color: gray;
+  }
+  
+  a {
+    width: 100%;
+    display: block;
+    text-align: center;
+  }
+
+  img {
+    max-width: 260px;
+    margin: auto;
   }
 `;
 
 const Header: React.SFC<PropTypes> = ({user}) => {
   return (
     <StyledHeader>
-      <h1><Link to='/'>８ちゃんねる</Link></h1>
-      <p>{user ? `ようこそ、${user.displayName}さん` : '未ログイン'}</p>
+      <h1>
+        <Link to='/'>
+          <img src={require('../logo.svg')} alt="8ちゃんねる" />
+        </Link>
+      </h1>
+      <p>Cloud Firestore & Firebase Authentication example</p>
     </StyledHeader>
   );
 };

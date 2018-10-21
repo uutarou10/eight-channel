@@ -1,3 +1,4 @@
+import { push } from 'connected-react-router';
 import { Dispatch } from 'redux';
 import { ActionType, createAction } from 'typesafe-actions';
 import Thread from '../model/thread';
@@ -7,7 +8,10 @@ enum Action {
   START_FETCH_THREAD_LIST = 'START_FETCH_THREAD_LIST',
   FETCHED_THREAD_LIST = 'FETCHED_THREAD_LIST',
   START_FETCH_THREAD = 'START_FETCH_THREAD',
-  FINISH_FETCH_THRAED = 'FINISH_FETCH_THREAD'
+  FINISH_FETCH_THRAED = 'FINISH_FETCH_THREAD',
+  START_CREATE_THREAD = 'START_CREATE_THREAD',
+  FINISH_CREATE_THREAD = 'FINISH_CREATE_THREAD',
+  UPDATE_TITLE = 'UPDATE_TITLE'
 }
 
 export const startFetchThreadList = createAction(Action.START_FETCH_THREAD_LIST, resolve => (
@@ -26,6 +30,18 @@ export const finishFetchThread = createAction(Action.FINISH_FETCH_THRAED, resolv
   (thread: Thread) => resolve(thread)
 ));
 
+export const startCreateThread = createAction(Action.START_CREATE_THREAD, resolve => (
+  () => resolve()
+));
+
+export const finishCreateThread = createAction(Action.FINISH_CREATE_THREAD, resolve => (
+  (thread: Thread) => resolve(thread)
+));
+
+export const updateTitle = createAction(Action.UPDATE_TITLE, resolve => (
+  (title: string) => resolve(title)
+));
+
 export const fetchThreadList = () => async (dispatch: Dispatch) => {
   dispatch(startFetchThreadList());
   const threads = await repository.thread.getList();
@@ -38,23 +54,37 @@ export const fetchThread = (id: string) => async (dispatch: Dispatch) => {
   dispatch(finishFetchThread(thread));
 };
 
+export const createThread = (title: string, uid: string) => async (dispatch: Dispatch) => {
+  dispatch(startCreateThread());
+  const thread = await repository.thread.create(title, uid);
+  dispatch(finishCreateThread(thread));
+  dispatch(push(`/threads/${thread.id}`));
+};
+
 interface StateType {
   threads: Thread[];
   isFetchingList: boolean;
   isFetching: boolean;
+  isCreating: boolean;
+  title: string;
 }
 
 const defaultState: StateType = {
   threads: [],
   isFetchingList: false,
-  isFetching: false
+  isFetching: false,
+  isCreating: false,
+  title: ''
 };
 
 type ActionTypes = ActionType<
   typeof startFetchThreadList |
   typeof fetchedThreadList |
   typeof startFetchThread |
-  typeof finishFetchThread
+  typeof finishFetchThread |
+  typeof startCreateThread |
+  typeof finishCreateThread |
+  typeof updateTitle
 >;
 
 export default (state: StateType = defaultState, action: ActionTypes) => {
@@ -84,6 +114,26 @@ export default (state: StateType = defaultState, action: ActionTypes) => {
         ...state,
         isFetching: false,
         threads: [action.payload]
+      };
+
+    case Action.START_CREATE_THREAD:
+      return {
+        ...state,
+        isCreating: true
+      };
+
+    case Action.FINISH_CREATE_THREAD:
+      return {
+        ...state,
+        isCreating: false,
+        threads: [...state.threads, action.payload],
+        title: ''
+      };
+
+    case Action.UPDATE_TITLE:
+      return {
+        ...state,
+        title: action.payload
       };
 
     default:

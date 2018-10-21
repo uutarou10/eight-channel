@@ -1,9 +1,10 @@
+import * as firebase from 'firebase/app';
 import Thread from '../model/thread';
 import { db } from '../util/firebase';
 
 export default {
   getList: async () => {
-    const querySnapshot = await db.collection('threads').get();
+    const querySnapshot = await db.collection('threads').orderBy('createdAt', 'desc').get();
 
     const result: Thread[] = [];
     querySnapshot.forEach(thread => {
@@ -16,6 +17,16 @@ export default {
   getById: async (id: string) => {
     const documentSnapshot = await db.collection('threads').doc(id).get();
     return createThreadByDocumentSnapshot(documentSnapshot);
+  },
+
+  create: async (title: string, uid: string) => {
+    const docRef = await db.collection('threads').add({
+      title,
+      uid,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    return createThreadByDocumentSnapshot(await docRef.get());
   }
 };
 

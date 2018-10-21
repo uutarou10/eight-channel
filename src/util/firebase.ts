@@ -3,12 +3,12 @@ import 'firebase/auth';
 import 'firebase/firestore';
 
 export const app = firebase.initializeApp({
-  apiKey: "AIzaSyD5ZzlULWA5wUxpFKRgewzST3n2bioe6b0",
-  authDomain: "eight-channel.firebaseapp.com",
-  databaseURL: "https://eight-channel.firebaseio.com",
-  messagingSenderId: "1048658842826",
-  projectId: "eight-channel",
-  storageBucket: "eight-channel.appspot.com",
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  databaseURL: process.env.REACT_APP_DB_URL,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
 });
 
 export const auth = app.auth();
@@ -16,3 +16,8 @@ export const db = app.firestore();
 db.settings({
   timestampsInSnapshots: true
 });
+
+export const signInWithGoogle = () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithRedirect(provider);
+};
